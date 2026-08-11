@@ -47,10 +47,10 @@ linkspider/
 
 ## Status
 
-✅ Working end-to-end: fetch → parse → resolve → check → report (sequential)
-✅ Basic test coverage for the parser
-⬜ No concurrency yet — links are checked one at a time
-⬜ Some servers reject HEAD requests, producing a false "unreachable" result instead of the real status code
+- ✅ Working end-to-end: fetch → parse → resolve → check → report (sequential)
+- ✅ Basic test coverage for the parser
+- ⬜ No concurrency yet — links are checked one at a time
+- ⬜ Some servers reject HEAD requests, producing a false "unreachable" result instead of the real status code
 
 ## Roadmap
 
