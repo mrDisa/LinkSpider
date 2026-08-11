@@ -12,10 +12,10 @@ func TestExtractLinks(t * testing.T) {
 	expected := []string{"/foo", "https://bar.com"}
 
 	if err != nil {
-		t.Fatalf("ошибка - %s", err)
+		t.Fatalf("error - %s", err)
 	}
 
 	if !reflect.DeepEqual(case1, expected) {
-		t.ErrorF("ExtractLinks(html with href) = %v; ожидалось %v", case1, expected)
+		t.ErrorF("ExtractLinks(html with href) = %v; expected %v", case1, expected)
 	}
 }
