@@ -14,20 +14,12 @@ type LinkResult struct {
 func CheckLink(url string) LinkResult {
 	resp, err := http.Head(url)
 	if err != nil {
-		return LinkResult {
-			URL: url,
-			StatusCode: 0,
-			Alive: false,
-			Error: err.Error(),
+		resp, err = http.Get(url)
+		if err != nil {
+			return LinkResult { URL: url, StatusCode: 0, Alive: false, Error: err.Error() }
 		}
 	}
 	defer resp.Body.Close()
-
-	aliveLink := resp.StatusCode >= 200 && resp.StatusCode < 400
-	return LinkResult {
-		URL: url,
-		StatusCode: resp.StatusCode,
-		Alive: aliveLink,
-		Error: "",
-	}
+	alive := resp.StatusCode >= 200 && resp.StatusCode < 400
+	return LinkResult { URL: url, StatusCode: resp.StatusCode, Alive: alive, Error: "" }
 }
