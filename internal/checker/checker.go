@@ -2,6 +2,7 @@ package checker
 
 import (
 	"net/http"
+	"time"
 )
 
 type LinkResult struct {
@@ -12,9 +13,13 @@ type LinkResult struct {
 }
 
 func CheckLink(url string) LinkResult {
-	resp, err := http.Head(url)
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	resp, err := client.Head(url)
 	if err != nil {
-		resp, err = http.Get(url)
+		resp, err = client.Get(url)
 		if err != nil {
 			return LinkResult { URL: url, StatusCode: 0, Alive: false, Error: err.Error() }
 		}

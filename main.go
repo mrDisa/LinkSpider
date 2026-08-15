@@ -1,15 +1,18 @@
 package main
 
 import (
-    "flag"
-    "fmt"
-    "net/url"
-    "linkspider/internal/checker"
-    "linkspider/internal/fetcher"
-    "linkspider/internal/parser"
+	"flag"
+	"fmt"
+	"linkspider/internal/checker"
+	"linkspider/internal/fetcher"
+	"linkspider/internal/parser"
+	"net/url"
+	"sync"
 )
 
 func main() {
+	var wg sync.WaitGroup
+
 	urlPtr := flag.String("url", "", "URL to check")
 	flag.Parse()
 	pageURL := *urlPtr
@@ -43,14 +46,20 @@ func main() {
 		}
 		resolved := base.ResolveReference(ref)
 		resolvedURL := resolved.String()
-		link := checker.CheckLink(resolvedURL)
+		wg.Add(1)
+		go func(u string) {
+			defer wg.Done()
+			link := checker.CheckLink(u)
+			if link.Error != "" {
+				fmt.Printf("Link - %s - STATUS: %d [FAIL]:\nError: %s\n", link.URL, link.StatusCode, link.Error)
+			} else if link.Alive {
+				fmt.Printf("Link - %s - STATUS: %d [OK]\n", link.URL, link.StatusCode)
+			} else {
+				fmt.Printf("Link - %s - STATUS: %d [BROKEN]\n", link.URL, link.StatusCode)
+			}
+
+		}(resolvedURL)
 		
-		if link.Error != "" {
-			fmt.Printf("Link - %s - STATUS: %d [FAIL]: %s\n", link.URL, link.StatusCode, link.Error)
-		} else if link.Alive {
-			fmt.Printf("Link - %s - STATUS: %d [OK]\n", link.URL, link.StatusCode)
-		} else {
-			fmt.Printf("Link - %s - STATUS: %d [BROKEN]\n", link.URL, link.StatusCode)
-		}
+		wg.Wait()
 	}
 }
